@@ -12,9 +12,10 @@ const int Window_Height = 1000;
 
 //-----------------------------------------------------------------------------
 
-void DrawMandelbrot( float min_x_coord,  float max_x_coord,
-                     float min_y_coord,  float max_y_coord,
-                     float max_r,        int   max_num_itrs );
+void DrawMandelbrot( sf::Image* img,
+                     float min_x_coord, float max_x_coord,
+                     float min_y_coord, float max_y_coord,
+                     float max_r,       int   max_num_itrs );
 
 //-----------------------------------------------------------------------------
 
@@ -25,6 +26,16 @@ int main()
     float min_x = -2.0f, max_x = 2.0f, min_y = -2.0f, max_y = 2.0f, max_r = 10;
     int   max_num_itrs = 256;
 
+    sf::Image img;
+    img.create( Window_Width, Window_Height, sf::Color::White );
+
+
+    sf::Texture texture;
+    texture.loadFromImage( img );
+
+    sf::Sprite sprite;
+    sprite.setTexture( texture );
+
     while( window.isOpen() )
     {
         sf::Event event;
@@ -32,10 +43,12 @@ int main()
         {
             if( event.type == sf::Event::Closed ) window.close();
         }
+        
+        DrawMandelbrot( &img, min_x, max_x, min_y, max_y, max_r, max_num_itrs );
+        texture.update( img );
 
-        DrawMandelbrot( min_x, max_x, min_y, max_y, max_r, max_num_itrs );
-
-        window.clear( sf::Color::White );
+        window.clear();
+        window.draw ( sprite );
         window.display();
     }
 
@@ -44,20 +57,20 @@ int main()
 
 //-----------------------------------------------------------------------------
 
-void DrawMandelbrot( float min_x_coord,  float max_x_coord,
+void DrawMandelbrot( sf::Image* img,  
+                     float min_x_coord,  float max_x_coord,
                      float min_y_coord,  float max_y_coord,
                      float max_r,        int   max_num_itrs )
 {
-    const float step_x = ( max_x_coord - min_x_coord ) / Window_Width;
-    const float step_y = ( max_y_coord - min_y_coord ) / Window_Height;
+    const float step_x = ( max_x_coord - min_x_coord ) / float( img->getSize().x );
+    const float step_y = ( max_y_coord - min_y_coord ) / float( img->getSize().y );
 
     const float max_r2 = max_r * max_r;
 
-    const int offset_x = Window_Width  / 2;
-    const int offset_y = Window_Height / 2;
-
+    int cur_img_y = 0;
     for( float cur_y = min_y_coord; cur_y <= max_y_coord; cur_y += step_y )
     {
+        int cur_img_x = 0;
         for( float cur_x = min_x_coord; cur_x <= max_x_coord; cur_x += step_x )
         {
             float x = cur_x;
@@ -76,9 +89,21 @@ void DrawMandelbrot( float min_x_coord,  float max_x_coord,
                 y = xy + xy + cur_y;
             }
 
-            
+            img->setPixel( cur_img_x, cur_img_y, sf::Color( 255 - n, 255 - n, 255 - n ) );
+
+            cur_img_x++;
         }
+
+        cur_img_y++;
     }
+}
+
+//-----------------------------------------------------------------------------
+
+void MoveCoords( float min_x_coord,  float max_x_coord,
+                     float min_y_coord,  float max_y_coord )
+{
+
 }
 
 //-----------------------------------------------------------------------------
