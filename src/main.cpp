@@ -22,7 +22,8 @@ int main()
 {
     sf::RenderWindow window( sf::VideoMode( Window_Width, Window_Height ), "Mandelbrot" );
 
-    const float max_r = 10;
+    float min_x = -2.0f, max_x = 2.0f, min_y = -2.0f, max_y = 2.0f, max_r = 10;
+    int   max_num_itrs = 256;
 
     while( window.isOpen() )
     {
@@ -32,7 +33,7 @@ int main()
             if( event.type == sf::Event::Closed ) window.close();
         }
 
-        DrawMandelbrot( -2.0f, 2.0f, -2.0f, 2.0f, 10.0f, 256 );
+        DrawMandelbrot( min_x, max_x, min_y, max_y, max_r, max_num_itrs );
 
         window.clear( sf::Color::White );
         window.display();
@@ -59,10 +60,23 @@ void DrawMandelbrot( float min_x_coord,  float max_x_coord,
     {
         for( float cur_x = min_x_coord; cur_x <= max_x_coord; cur_x += step_x )
         {
-            for( int i = 0; i < max_num_itrs; i++ )
+            float x = cur_x;
+            float y = cur_y;
+            
+            int n = 0;
+            for( ; n < max_num_itrs; n++ )
             {
-                
+                float x2 = x * x;
+                float y2 = y * y;
+                float xy = x * y;  
+
+                if( x2 + y2 > max_r2 ) break;
+
+                x = x2 - y2 + cur_x;
+                y = xy + xy + cur_y;
             }
+
+            
         }
     }
 }
