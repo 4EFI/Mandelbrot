@@ -17,13 +17,18 @@ void DrawMandelbrot( sf::Image* img,
                      float min_y_coord, float max_y_coord,
                      float max_r,       int   max_num_itrs );
 
+void MoveCoords( sf::Event& event, 
+                 float* min_x_coord, float* max_x_coord, float step_x,
+                 float* min_y_coord, float* max_y_coord, float step_y,
+                 float  scale );
+
 //-----------------------------------------------------------------------------
 
 int main()
 {
     sf::RenderWindow window( sf::VideoMode( Window_Width, Window_Height ), "Mandelbrot" );
 
-    float min_x = -2.0f, max_x = 2.0f, min_y = -2.0f, max_y = 2.0f, max_r = 10;
+    float min_x = -2.375f, max_x = 1.625f, min_y = -2.0f, max_y = 2.0f, max_r = 10;
     int   max_num_itrs = 256;
 
     sf::Image img;
@@ -42,6 +47,8 @@ int main()
         while( window.pollEvent(event) )
         {
             if( event.type == sf::Event::Closed ) window.close();
+
+            MoveCoords( event, &min_x, &max_x, 0.1f, &min_y, &max_y, 0.1f, 1.1f );
         }
         
         DrawMandelbrot( &img, min_x, max_x, min_y, max_y, max_r, max_num_itrs );
@@ -89,7 +96,7 @@ void DrawMandelbrot( sf::Image* img,
                 y = xy + xy + cur_y;
             }
 
-            img->setPixel( cur_img_x, cur_img_y, sf::Color( 255 - n, 255 - n, 255 - n ) );
+            img->setPixel( cur_img_x, cur_img_y, sf::Color( n, n, n ) );
 
             cur_img_x++;
         }
@@ -100,10 +107,54 @@ void DrawMandelbrot( sf::Image* img,
 
 //-----------------------------------------------------------------------------
 
-void MoveCoords( float min_x_coord,  float max_x_coord,
-                     float min_y_coord,  float max_y_coord )
+void MoveCoords( sf::Event& event, 
+                 float* min_x_coord,  float* max_x_coord, float step_x,
+                 float* min_y_coord,  float* max_y_coord, float step_y,
+                 float  scale )
 {
+    if (event.type == sf::Event::KeyPressed)
+    {
+        switch (event.key.code)
+        {
+            case sf::Keyboard::Key::S:     
+                (*min_y_coord) += step_y;
+                (*max_y_coord) += step_y;                                             
+                break;
 
+            case sf::Keyboard::Key::W: 
+                (*min_y_coord) -= step_y;
+                (*max_y_coord) -= step_y;                                             
+                break;
+
+            case sf::Keyboard::Key::D: 
+                (*min_x_coord) += step_x;
+                (*max_x_coord) += step_x;                                             
+                break;
+
+            case sf::Keyboard::Key::A: 
+                (*min_x_coord) -= step_x;
+                (*max_x_coord) -= step_x;                                             
+                break;
+
+            case sf::Keyboard::Key::M: 
+                (*min_x_coord) *= scale;
+                (*max_x_coord) *= scale;
+                (*min_y_coord) *= scale;
+                (*max_y_coord) *= scale;                                             
+                break;
+
+            case sf::Keyboard::Key::P: 
+                (*min_x_coord) /= scale;
+                (*max_x_coord) /= scale;
+                (*min_y_coord) /= scale;
+                (*max_y_coord) /= scale;                                             
+                break;
+            
+            default: 
+                break;
+        }
+
+    }
 }
 
 //-----------------------------------------------------------------------------
