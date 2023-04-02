@@ -13,7 +13,7 @@ link : $(OBJ)
 src/build/%.o : src/%.cpp  	
 	echo  $(@D)
 	mkdir -p $(@D)
-	$(CC) $(IFLAGS) $(CFLAGS) -c $^ -o $@	
+	$(CC) $(IFLAGS) $(CFLAGS) $(FFLAGS) -c $^ -o $@	
 
 clear :
 	rm   -f ./src/build/*.o     
