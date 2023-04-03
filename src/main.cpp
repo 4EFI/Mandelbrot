@@ -15,15 +15,15 @@ const int Window_Height = 1024;
 
 //-----------------------------------------------------------------------------
 
-void DrawMandelbrot( sf::Image* img,
-                     float min_x_coord, float max_x_coord,
-                     float min_y_coord, float max_y_coord,
-                     float max_r,       int   max_num_itrs );
+inline void DrawMandelbrot( sf::Image* img,
+                            float min_x_coord, float max_x_coord,
+                            float min_y_coord, float max_y_coord,
+                            float max_r,       int   max_num_itrs );
 
-void DrawMandelbrotSSE( sf::Image* img,  
-                        float min_x_coord,  float max_x_coord,
-                        float min_y_coord,  float max_y_coord,
-                        float max_r,        int   max_num_itrs );
+inline void DrawMandelbrotSSE( sf::Image* img,  
+                               float min_x_coord,  float max_x_coord,
+                               float min_y_coord,  float max_y_coord,
+                               float max_r,        int   max_num_itrs );
 
 void MoveCoords( sf::Event& event, 
                  float* min_x_coord, float* max_x_coord, float step_x,
@@ -82,10 +82,10 @@ int main()
 
 //-----------------------------------------------------------------------------
 
-void DrawMandelbrot( sf::Image* img,  
-                     float min_x_coord,  float max_x_coord,
-                     float min_y_coord,  float max_y_coord,
-                     float max_r,        int   max_num_itrs )
+inline void DrawMandelbrot( sf::Image* img,  
+                            float min_x_coord,  float max_x_coord,
+                            float min_y_coord,  float max_y_coord,
+                            float max_r,        int   max_num_itrs )
 {
     const float step_x = ( max_x_coord - min_x_coord ) / float( img->getSize().x );
     const float step_y = ( max_y_coord - min_y_coord ) / float( img->getSize().y );
@@ -101,8 +101,8 @@ void DrawMandelbrot( sf::Image* img,
             float x = cur_x;
             float y = cur_y;
             
-            int n = 0;
-            for( ; n < max_num_itrs; n++ )
+            int color = 0;
+            for( ; color < max_num_itrs; color++ )
             {
                 float x2 = x * x;
                 float y2 = y * y;
@@ -117,7 +117,7 @@ void DrawMandelbrot( sf::Image* img,
             
             if( cur_img_x >= 1024 || cur_img_y >= 1024 ) continue;
 
-            img->setPixel( cur_img_x, cur_img_y, sf::Color( sf::Uint8(n), sf::Uint8(n), sf::Uint8(n) ) );
+            img->setPixel( cur_img_x, cur_img_y, sf::Color( sf::Uint8(color), sf::Uint8(color), sf::Uint8(color) ) );
 
             cur_img_x++;
         }
@@ -128,10 +128,10 @@ void DrawMandelbrot( sf::Image* img,
 
 //-----------------------------------------------------------------------------
 
-void DrawMandelbrotSSE( sf::Image* img,  
-                        float min_x_coord,  float max_x_coord,
-                        float min_y_coord,  float max_y_coord,
-                        float max_r,        int   max_num_itrs )
+inline void DrawMandelbrotSSE( sf::Image* img,  
+                               float min_x_coord,  float max_x_coord,
+                               float min_y_coord,  float max_y_coord,
+                               float max_r,        int   max_num_itrs )
 {
     float step_x = ( max_x_coord - min_x_coord ) / float( img->getSize().x );
     float step_y = ( max_y_coord - min_y_coord ) / float( img->getSize().y );
@@ -174,10 +174,10 @@ void DrawMandelbrotSSE( sf::Image* img,
             int* colors = ( int* )&N;
             for( int i = 0; i < 8; i++ )
             {
-                sf::Uint8 n( colors[i] );
+                sf::Uint8 color( sf::Uint8( colors[i] ) );
                 if( cur_img_x + i >= 1024 || cur_img_y >= 1024 ) break;
 
-                img->setPixel( cur_img_x + i, cur_img_y, sf::Color( n, n, n ) );
+                img->setPixel( cur_img_x + i, cur_img_y, sf::Color( color, color, color ) );
             }
 
             cur_img_x += 8;
