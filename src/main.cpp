@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define SSE
+
 //-----------------------------------------------------------------------------
 
 const int Window_Width  = 1024;
