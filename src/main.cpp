@@ -93,10 +93,10 @@ void DrawMandelbrot( sf::Image* img,
     const float max_r2 = max_r * max_r;
 
     int cur_img_y = 0;
-    for( float cur_y = min_y_coord; cur_y <= max_y_coord; cur_y += step_y )
+    for( float cur_y = min_y_coord; cur_y < max_y_coord; cur_y += step_y )
     {
         int cur_img_x = 0;
-        for( float cur_x = min_x_coord; cur_x <= max_x_coord; cur_x += step_x )
+        for( float cur_x = min_x_coord; cur_x < max_x_coord; cur_x += step_x )
         {
             float x = cur_x;
             float y = cur_y;
@@ -114,7 +114,10 @@ void DrawMandelbrot( sf::Image* img,
                 y = xy + xy + cur_y;
             }
 
-            img->setPixel( cur_img_x, cur_img_y, sf::Color( n, n, n ) );
+            
+            if( cur_img_x >= 1024 || cur_img_y >= 1024 ) continue;
+
+            img->setPixel( cur_img_x, cur_img_y, sf::Color( sf::Uint8(n), sf::Uint8(n), sf::Uint8(n) ) );
 
             cur_img_x++;
         }
@@ -138,10 +141,10 @@ void DrawMandelbrotSSE( sf::Image* img,
     __m256 mul_num = _mm256_set_ps( 7.0f, 6.0f, 5.0f, 4.0f, 3.0f, 2.0f, 1.0f, 0.0f );
 
     int cur_img_y = 0;
-    for( float cur_y = min_y_coord; cur_y <= max_y_coord; cur_y += step_y )
+    for( float cur_y = min_y_coord; cur_y < max_y_coord; cur_y += step_y )
     {
         int cur_img_x = 0;
-        for( float cur_x = min_x_coord; cur_x <= max_x_coord; cur_x += step_x * 8.0f )
+        for( float cur_x = min_x_coord; cur_x < max_x_coord; cur_x += step_x * 8.0f )
         {
             __m256 x0 = _mm256_add_ps ( _mm256_mul_ps( mul_num, _mm256_set1_ps( step_x ) ), 
                                         _mm256_set1_ps( cur_x ) );
@@ -171,7 +174,9 @@ void DrawMandelbrotSSE( sf::Image* img,
             int* colors = ( int* )&N;
             for( int i = 0; i < 8; i++ )
             {
-                int n = colors[i];
+                sf::Uint8 n( colors[i] );
+                if( cur_img_x + i >= 1024 || cur_img_y >= 1024 ) break;
+
                 img->setPixel( cur_img_x + i, cur_img_y, sf::Color( n, n, n ) );
             }
 
