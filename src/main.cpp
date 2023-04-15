@@ -39,6 +39,17 @@ int main()
     float min_x = -2.375f, max_x = 1.625f, min_y = -2.0f, max_y = 2.0f, max_r = 10;
     int   max_num_itrs = 256;
 
+    sf::Font font = {};
+    font.loadFromFile( "img/SEASRN__.ttf" );
+
+    sf::Text fps_text = {};
+    fps_text.setFont         ( font );
+    fps_text.setFillColor    ( sf::Color::White );
+    fps_text.setString       ( "FPS:" );
+    fps_text.setCharacterSize( 48 );
+    fps_text.setPosition     ( 20, 20 );
+
+
     sf::Image img;
     img.create( Window_Width, Window_Height, sf::Color::White );
 
@@ -68,12 +79,19 @@ int main()
         DrawMandelbrot   ( &img, min_x, max_x, min_y, max_y, max_r, max_num_itrs );
 #endif
 
-        texture.update( img );
 
-        printf ( "FPS %.3f\n", 1 / elapsed.asSeconds() );
+        char fps_buffer[ 100 ] = "";
+        sprintf( fps_buffer, "FPS: %.1f\n", 1 / elapsed.asSeconds() );
+
+        fps_text.setString( fps_buffer );
+        printf( "%s", fps_buffer );
+
+        texture.update( img );
 
         window.clear( sf::Color::Red );
         window.draw ( sprite );
+        window.draw ( fps_text );
+        
         window.display();
     }
 
@@ -190,11 +208,13 @@ inline void DrawMandelbrotSSE( sf::Image* img,
 
 //-----------------------------------------------------------------------------
 
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+
 void MoveCoords( sf::Event& event, 
                  float* min_x_coord,  float* max_x_coord, float step_x,
                  float* min_y_coord,  float* max_y_coord, float step_y,
                  float  scale )
-{
+{       
     if (event.type == sf::Event::KeyPressed)
     {
         switch (event.key.code)
@@ -239,5 +259,7 @@ void MoveCoords( sf::Event& event,
 
     }
 }
+
+#pragma GCC diagnostic warning "-Wswitch-enum"
 
 //-----------------------------------------------------------------------------
